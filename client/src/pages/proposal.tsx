@@ -20,6 +20,9 @@ import {
   TrendingDown,
   TrendingUp,
   Users,
+  DollarSign,
+  BarChart2,
+  Clock,
 } from "lucide-react";
 import {
   Area,
@@ -31,6 +34,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip as RTooltip,
   XAxis,
@@ -57,7 +61,7 @@ const fadeUp = {
   transition: { duration: 0.55, ease: "easeOut" },
 };
 
-/* ----------------------------- shared bits ----------------------------- */
+/* ─────────────────────────── shared bits ─────────────────────────────── */
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -136,7 +140,7 @@ function Logo({ light = false }: { light?: boolean }) {
   );
 }
 
-/* -------------------------------- NAV ---------------------------------- */
+/* ─────────────────────────────── NAV ───────────────────────────────────── */
 
 const NAV = [
   ["problem", "The Problem"],
@@ -175,7 +179,7 @@ function Nav() {
   );
 }
 
-/* -------------------------------- HERO --------------------------------- */
+/* ─────────────────────────────── HERO ──────────────────────────────────── */
 
 function Hero() {
   return (
@@ -215,12 +219,13 @@ function Hero() {
             economics, and pure upside for corporate.
           </p>
           <div className="mt-10 flex flex-wrap gap-4 justify-center">
-            <a href="#calculator" className="iv-btn px-8 py-3.5 text-base">
+            <a href="#calculator" className="iv-btn px-8 py-3.5 text-base" data-testid="button-explore-guarantee">
               Explore the Guarantee
             </a>
             <a
               href="#offer"
               className="px-8 py-3.5 text-base rounded-[5px] font-cta font-bold text-white border border-white/40 hover:bg-white/10 transition-colors"
+              data-testid="button-see-pricing"
             >
               See Pricing
             </a>
@@ -256,9 +261,9 @@ function Hero() {
   );
 }
 
-/* ------------------------------ PROBLEM -------------------------------- */
+/* ──────────────────────────── PROBLEM ───────────────────────────────────── */
 
-const rampWithout = [
+const rampData = [
   { m: "Open", without: 18, with: 100 },
   { m: "Mo 1", without: 27, with: 108 },
   { m: "Mo 2", without: 38, with: 119 },
@@ -336,7 +341,7 @@ function Problem() {
               Active members by month from opening day.
             </p>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={rampWithout} margin={{ left: -18, right: 8 }}>
+              <LineChart data={rampData} margin={{ left: -18, right: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#555b60" />
                 <XAxis dataKey="m" stroke="#9aa0a5" fontSize={12} />
                 <YAxis stroke="#9aa0a5" fontSize={12} />
@@ -381,7 +386,7 @@ function Problem() {
   );
 }
 
-/* ------------------------------ SOLUTION ------------------------------- */
+/* ──────────────────────────── SOLUTION ──────────────────────────────────── */
 
 const solutionCards = [
   [
@@ -455,10 +460,7 @@ function Solution() {
           ))}
         </div>
 
-        <motion.div
-          {...fadeUp}
-          className="mt-14 text-center max-w-3xl mx-auto"
-        >
+        <motion.div {...fadeUp} className="mt-14 text-center max-w-3xl mx-auto">
           <p
             className="font-script"
             style={{ color: GREEN, fontSize: "clamp(22px,3vw,30px)" }}
@@ -472,7 +474,7 @@ function Solution() {
   );
 }
 
-/* ------------------------------- OFFER --------------------------------- */
+/* ──────────────────────────── OFFER ─────────────────────────────────────── */
 
 type Tier = "standard" | "volume" | "pilot";
 
@@ -523,7 +525,6 @@ function Offer({
           />
         </motion.div>
 
-        {/* Pricing toggle */}
         <motion.div {...fadeUp} className="flex justify-center mb-10">
           <div className="inline-flex rounded-xl bg-white p-1.5 shadow-sm border border-black/5">
             {(Object.keys(TIERS) as Tier[]).map((t) => {
@@ -547,7 +548,6 @@ function Offer({
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6 items-stretch">
-          {/* Price card */}
           <motion.div
             {...fadeUp}
             className="lg:col-span-1 rounded-2xl bg-white p-8 shadow-lg border-t-4 flex flex-col"
@@ -587,7 +587,6 @@ function Offer({
             </div>
           </motion.div>
 
-          {/* Qualification requirements */}
           <motion.div
             {...fadeUp}
             transition={{ duration: 0.55, delay: 0.1 }}
@@ -660,52 +659,137 @@ function Offer({
   );
 }
 
-/* ---------------------------- CALCULATOR ------------------------------- */
+/* ──────────────────────────── CALCULATOR ────────────────────────────────── */
 
 const GUARANTEE = 100;
+const AD_SPEND = 20000;
+
+function SliderRow({
+  label,
+  value,
+  min,
+  max,
+  step,
+  display,
+  onChange,
+  testId,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  display: string;
+  onChange: (v: number) => void;
+  testId: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-bold uppercase tracking-wider" style={{ color: "#58595B" }}>
+          {label}
+        </label>
+        <span className="font-mono font-bold text-xl" style={{ color: GREEN }} data-testid={`text-${testId}`}>
+          {display}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="iv-range w-full"
+        data-testid={`slider-${testId}`}
+      />
+      <div className="flex justify-between text-xs" style={{ color: "#bbb" }}>
+        <span>{min === 79 ? `$${min}` : min}</span>
+        <span>{max === 400 ? `$${max}` : max === 20 ? `${max} mo` : max}</span>
+      </div>
+    </div>
+  );
+}
+
+function MetricRow({
+  label,
+  value,
+  sub,
+  color,
+  large,
+  testId,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  color?: string;
+  large?: boolean;
+  testId?: string;
+}) {
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-black/5 last:border-0">
+      <div>
+        <div className="text-sm font-semibold" style={{ color: "#58595B" }}>{label}</div>
+        {sub && <div className="text-xs mt-0.5" style={{ color: "#aaa" }}>{sub}</div>}
+      </div>
+      <span
+        className="font-mono font-bold shrink-0 ml-4"
+        style={{ color: color || CHARCOAL, fontSize: large ? 22 : 16 }}
+        data-testid={testId}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
 
 function Calculator({ tier, setTier }: { tier: Tier; setTier: (t: Tier) => void }) {
-  const [sold, setSold] = useState(62);
+  const [sold, setSold] = useState(100);
+  const [avgValue, setAvgValue] = useState(199);
+  const [lifetime, setLifetime] = useState(10);
+
   const fee = TIERS[tier].price;
 
-  const { refundPct, refund, net, cpm, pctOfGuarantee } = useMemo(() => {
+  const calc = useMemo(() => {
     const refundPct = Math.max(0, (GUARANTEE - sold) / GUARANTEE);
     const refund = refundPct * fee;
-    const net = fee - refund;
-    const cpm = sold > 0 ? net / sold : 0;
-    const pctOfGuarantee = Math.min((sold / GUARANTEE) * 100, 150);
-    return { refundPct, refund, net, cpm, pctOfGuarantee };
-  }, [sold, fee]);
+    const netRevryzeCost = fee - refund;
+    const totalInvestment = netRevryzeCost + AD_SPEND;
+    const mrr = sold * avgValue;
+    const totalRevenue = mrr * lifetime;
+    const netProfit = totalRevenue - totalInvestment;
+    const roi = totalInvestment > 0 ? totalRevenue / totalInvestment : 0;
+    const payback = mrr > 0 ? totalInvestment / mrr : 0;
+    const fillPct = Math.min((sold / GUARANTEE) * 100, 100);
+    const hit = sold >= GUARANTEE;
+    return {
+      refundPct, refund, netRevryzeCost,
+      totalInvestment, mrr, totalRevenue,
+      netProfit, roi, payback, fillPct, hit,
+    };
+  }, [sold, avgValue, lifetime, fee]);
 
-  const hit = sold >= GUARANTEE;
-  const fillWidth = Math.min((sold / GUARANTEE) * 100, 100);
-
-  const curve = useMemo(
-    () =>
-      Array.from({ length: 16 }, (_, i) => {
-        const s = i * 10;
-        const rp = Math.max(0, (GUARANTEE - s) / GUARANTEE);
-        return {
-          sold: s,
-          refund: Math.round(rp * fee),
-          net: Math.round(fee - rp * fee),
-        };
-      }),
-    [fee]
-  );
+  const cashFlowData = useMemo(() => {
+    return Array.from({ length: lifetime + 1 }, (_, i) => ({
+      month: i,
+      cumulative: i === 0
+        ? -calc.totalInvestment
+        : -calc.totalInvestment + calc.mrr * i,
+    }));
+  }, [calc.totalInvestment, calc.mrr, lifetime]);
 
   return (
     <section id="calculator" className="py-24 px-6 bg-white" data-testid="section-calculator">
       <div className="max-w-7xl mx-auto">
         <motion.div {...fadeUp}>
           <SectionHeading
-            eyebrow="Interactive Refund Calculator"
-            title="See exactly what you pay for the members we deliver."
-            sub="Slide to any outcome. Your cost moves with your results, in real time."
+            eyebrow="Franchisee ROI Calculator"
+            title="See your full return — in real time."
+            sub="Adjust the sliders to any scenario. All ten financial outputs update live so you can see exactly what the numbers look like for your opening."
           />
         </motion.div>
 
-        {/* tier mini-toggle */}
+        {/* Tier toggle */}
         <motion.div {...fadeUp} className="flex justify-center mb-10">
           <div className="inline-flex rounded-xl p-1.5 border border-black/10" style={{ background: "#F4F4F4" }}>
             {(Object.keys(TIERS) as Tier[]).map((t) => {
@@ -729,149 +813,242 @@ function Calculator({ tier, setTier }: { tier: Tier; setTier: (t: Tier) => void 
         </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-8">
-          {/* Controls + fill bar */}
+          {/* ── LEFT: Sliders ── */}
           <motion.div {...fadeUp} className="lg:col-span-5 space-y-6">
-            <div className="rounded-2xl bg-white p-7 shadow-lg border border-black/5">
-              <div className="flex items-end justify-between mb-2">
-                <label className="text-sm font-bold uppercase tracking-wider" style={{ color: "#58595B" }}>
-                  Memberships sold
-                </label>
-                <span
-                  className="font-mono font-bold"
-                  style={{ color: GREEN, fontSize: 42, lineHeight: 1 }}
-                  data-testid="text-sold-value"
-                >
-                  {sold}
-                </span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={150}
-                step={1}
+            <div className="rounded-2xl bg-white p-7 shadow-lg border border-black/5 space-y-7">
+              <SliderRow
+                label="Memberships Sold"
                 value={sold}
-                onChange={(e) => setSold(parseInt(e.target.value))}
-                className="iv-range w-full mt-3"
-                data-testid="slider-memberships"
+                min={1}
+                max={100}
+                step={1}
+                display={String(sold)}
+                onChange={setSold}
+                testId="memberships"
               />
-              <div className="flex justify-between text-xs mt-2" style={{ color: "#999" }}>
-                <span>0</span>
-                <span>guarantee: 100</span>
-                <span>150</span>
-              </div>
-
-              {/* fill bar */}
-              <div className="mt-7">
-                <div className="flex justify-between text-xs font-bold mb-2" style={{ color: "#58595B" }}>
-                  <span>% of guarantee delivered</span>
-                  <span className="font-mono" style={{ color: hit ? GREEN : "#58595B" }}>
-                    {pctOfGuarantee.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-5 rounded-full overflow-hidden" style={{ background: "#e3e8e5" }}>
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ background: `linear-gradient(90deg, ${GREEN}, ${LIME})` }}
-                    animate={{ width: `${fillWidth}%` }}
-                    transition={{ type: "spring", stiffness: 120, damping: 20 }}
-                  />
-                </div>
-              </div>
+              <SliderRow
+                label="Avg Membership Value"
+                value={avgValue}
+                min={79}
+                max={400}
+                step={1}
+                display={`$${avgValue}/mo`}
+                onChange={setAvgValue}
+                testId="avg-value"
+              />
+              <SliderRow
+                label="Avg Member Lifetime"
+                value={lifetime}
+                min={1}
+                max={20}
+                step={1}
+                display={`${lifetime} mo`}
+                onChange={setLifetime}
+                testId="lifetime"
+              />
             </div>
 
-            <div
-              className="rounded-2xl p-6 flex items-center gap-4 transition-colors"
-              style={{
-                background: hit ? "#e8f5ee" : "#fff5f5",
-                border: `1px solid ${hit ? "#bfe6cf" : "#ffd7d7"}`,
-              }}
-              data-testid="status-box"
-            >
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: hit ? GREEN : FAIL, color: "#fff" }}
-              >
-                {hit ? <ShieldCheck size={24} /> : <TrendingUp size={24} />}
+            {/* Guarantee qualification box */}
+            <div className="rounded-2xl border border-dashed p-6 space-y-3" style={{ borderColor: GREEN, background: "#f7fdf9" }}>
+              <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: GREEN }}>
+                Qualification requirements (to invoke guarantee)
               </div>
-              <div>
-                <h4 className="font-bold" style={{ color: CHARCOAL }}>
-                  {hit ? "Full delivery — no refund owed" : "Guarantee active"}
-                </h4>
-                <p className="text-sm" style={{ color: "#58595B" }}>
-                  {hit
-                    ? `You hit ${sold} members. You pay the full fee for full results.`
-                    : `${sold} of 100 delivered → ${(refundPct * 100).toFixed(0)}% refund back to you.`}
-                </p>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: "#58595B" }}>Ad spend</span>
+                <span className="font-mono font-bold" style={{ color: CHARCOAL }}>$20,000</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: "#58595B" }}>Community leads generated</span>
+                <span className="font-mono font-bold" style={{ color: CHARCOAL }}>250</span>
+              </div>
+              <p className="text-xs" style={{ color: "#999" }}>These are fixed requirements — not sliders. Meet them and the 100-member guarantee activates.</p>
+            </div>
+
+            {/* Progress bar */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm border border-black/5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-bold" style={{ color: "#58595B" }}>Guarantee progress</span>
+                <span className="font-mono font-bold text-sm" style={{ color: calc.hit ? GREEN : "#58595B" }}>
+                  {sold} / {GUARANTEE}
+                </span>
+              </div>
+              <div className="h-5 rounded-full overflow-hidden" style={{ background: "#e3e8e5" }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: `linear-gradient(90deg, ${GREEN}, ${LIME})` }}
+                  animate={{ width: `${calc.fillPct}%` }}
+                  transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                />
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-sm">
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: calc.hit ? GREEN : FAIL, color: "#fff" }}
+                >
+                  {calc.hit ? <ShieldCheck size={15} /> : <TrendingUp size={15} />}
+                </div>
+                <span style={{ color: "#58595B" }}>
+                  {calc.hit
+                    ? "Full delivery — no refund owed."
+                    : `${sold} of 100 → ${(calc.refundPct * 100).toFixed(0)}% refund back to you.`}
+                </span>
               </div>
             </div>
           </motion.div>
 
-          {/* Outputs */}
-          <motion.div {...fadeUp} transition={{ duration: 0.55, delay: 0.1 }} className="lg:col-span-7 space-y-6">
-            <div className="grid sm:grid-cols-3 gap-4">
+          {/* ── RIGHT: Outputs ── */}
+          <motion.div
+            {...fadeUp}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="lg:col-span-7 space-y-5"
+          >
+            {/* Investment section */}
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-black/5">
+              <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: GREEN }}>
+                Franchisee investment
+              </div>
+              <MetricRow
+                label="Revryze fee paid"
+                value={money(fee)}
+                color={CHARCOAL}
+                testId="text-fee"
+              />
+              <MetricRow
+                label="Refund earned"
+                value={calc.refund > 0 ? `+${money(calc.refund)}` : "$0"}
+                sub={calc.refund > 0 ? `${(calc.refundPct * 100).toFixed(0)}% pro-rata refund` : "Full delivery — no refund"}
+                color={calc.refund > 0 ? GREEN : "#aaa"}
+                testId="text-refund"
+              />
+              <MetricRow
+                label="Net Revryze cost"
+                value={money(calc.netRevryzeCost)}
+                color={CHARCOAL}
+                testId="text-net-revryze"
+              />
+              <MetricRow
+                label="Ad spend (fixed requirement)"
+                value={money(AD_SPEND)}
+                color={CHARCOAL}
+              />
+              <div className="mt-3 pt-3 border-t-2 flex items-center justify-between" style={{ borderColor: GREEN }}>
+                <span className="font-bold text-sm" style={{ color: CHARCOAL }}>Total franchisee investment</span>
+                <span className="font-mono font-bold text-xl" style={{ color: CHARCOAL }} data-testid="text-total-investment">
+                  {money(calc.totalInvestment)}
+                </span>
+              </div>
+            </div>
+
+            {/* Revenue section */}
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-black/5">
+              <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: GREEN }}>
+                Membership revenue
+              </div>
+              <MetricRow
+                label="Monthly recurring revenue at open"
+                value={money(calc.mrr)}
+                sub={`${sold} members × $${avgValue}/mo`}
+                color={GREEN}
+                testId="text-mrr"
+              />
+              <MetricRow
+                label="Total membership revenue"
+                value={money(calc.totalRevenue)}
+                sub={`${sold} members × $${avgValue} × ${lifetime} months`}
+                color={GREEN}
+                large
+                testId="text-total-revenue"
+              />
+            </div>
+
+            {/* ROI summary */}
+            <div className="grid grid-cols-3 gap-3">
               {[
-                ["Refund to you", money(refund), `${(refundPct * 100).toFixed(0)}% of fee`, GREEN],
-                ["Net cost", money(net), "what you actually pay", CHARCOAL],
-                ["Cost / member", sold > 0 ? money(cpm) : "—", "effective acquisition cost", GREEN2],
-              ].map(([label, val, sub, color]) => (
+                {
+                  icon: DollarSign,
+                  label: "Net Profit",
+                  value: money(calc.netProfit),
+                  color: calc.netProfit >= 0 ? GREEN : FAIL,
+                  testId: "text-net-profit",
+                },
+                {
+                  icon: BarChart2,
+                  label: "ROI Multiple",
+                  value: `${calc.roi.toFixed(1)}x`,
+                  color: calc.roi >= 1 ? GREEN : FAIL,
+                  testId: "text-roi",
+                },
+                {
+                  icon: Clock,
+                  label: "Payback",
+                  value: `${calc.payback.toFixed(1)} mo`,
+                  color: CHARCOAL,
+                  testId: "text-payback",
+                },
+              ].map(({ icon: Icon, label, value, color, testId }) => (
                 <div
-                  key={label as string}
-                  className="rounded-2xl bg-white p-6 shadow-md border border-black/5 text-center"
+                  key={label}
+                  className="rounded-2xl bg-white p-4 shadow-md border border-black/5 text-center"
                 >
-                  <div className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#999" }}>
-                    {label as string}
+                  <Icon size={18} style={{ color: GREEN }} className="mx-auto mb-1" />
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "#999" }}>
+                    {label}
                   </div>
-                  <div className="font-mono font-bold" style={{ color: color as string, fontSize: 28 }}>
-                    {val as string}
-                  </div>
-                  <div className="text-xs mt-1" style={{ color: "#999" }}>
-                    {sub as string}
+                  <div
+                    className="font-mono font-bold"
+                    style={{ color, fontSize: 20 }}
+                    data-testid={testId}
+                  >
+                    {value}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-2xl bg-white p-7 shadow-md border border-black/5">
+            {/* Cash flow chart */}
+            <div className="rounded-2xl bg-white p-6 shadow-md border border-black/5">
               <div className="flex items-center gap-2 mb-1">
-                <LineChartIcon size={18} style={{ color: GREEN }} />
-                <h4 className="font-bold" style={{ color: CHARCOAL }}>
-                  Your net cost tracks your results
+                <LineChartIcon size={16} style={{ color: GREEN }} />
+                <h4 className="font-bold text-sm" style={{ color: CHARCOAL }}>
+                  Cumulative cash flow over member lifetime
                 </h4>
               </div>
-              <p className="text-sm mb-5" style={{ color: "#666" }}>
-                Net cost climbs only as we deliver members. The refund covers the gap.
+              <p className="text-xs mb-4" style={{ color: "#999" }}>
+                Starts negative (your total investment), then climbs as MRR compounds each month.
               </p>
-              <ResponsiveContainer width="100%" height={240}>
-                <AreaChart data={curve} margin={{ left: -12, right: 8 }}>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={cashFlowData} margin={{ left: -8, right: 8, top: 8 }}>
                   <defs>
-                    <linearGradient id="netFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={GREEN} stopOpacity={0.35} />
-                      <stop offset="100%" stopColor={GREEN} stopOpacity={0.03} />
+                    <linearGradient id="cfFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={GREEN} stopOpacity={0.4} />
+                      <stop offset="100%" stopColor={GREEN} stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis dataKey="sold" stroke="#999" fontSize={12} />
-                  <YAxis stroke="#999" fontSize={12} tickFormatter={(v) => `$${v / 1000}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="month"
+                    stroke="#bbb"
+                    fontSize={11}
+                    tickFormatter={(v) => `M${v}`}
+                  />
+                  <YAxis
+                    stroke="#bbb"
+                    fontSize={11}
+                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  />
+                  <ReferenceLine y={0} stroke={CHARCOAL} strokeDasharray="4 4" strokeWidth={1.5} />
                   <RTooltip
-                    formatter={(v: number) => money(v)}
-                    labelFormatter={(l) => `${l} members`}
-                    contentStyle={{ borderRadius: 8, border: "1px solid #eee" }}
+                    formatter={(v: number) => [money(v), "Cumulative"]}
+                    labelFormatter={(l) => `Month ${l}`}
+                    contentStyle={{ borderRadius: 8, border: "1px solid #eee", fontSize: 12 }}
                   />
                   <Area
                     type="monotone"
-                    dataKey="net"
-                    name="Net cost"
+                    dataKey="cumulative"
                     stroke={GREEN}
-                    strokeWidth={3}
-                    fill="url(#netFill)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="refund"
-                    name="Refund"
-                    stroke={FAIL}
-                    strokeWidth={2}
-                    fill="none"
+                    strokeWidth={2.5}
+                    fill="url(#cfFill)"
+                    dot={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -883,7 +1060,7 @@ function Calculator({ tier, setTier }: { tier: Tier; setTier: (t: Tier) => void 
   );
 }
 
-/* -------------------------- FOUNDING CAMPAIGN -------------------------- */
+/* ──────────────────────── FOUNDING CAMPAIGN ─────────────────────────────── */
 
 const vitalStack: [string, number][] = [
   ["Mega Myers IV", 179],
@@ -900,14 +1077,14 @@ const eliteStack: [string, number][] = [
   ["Founder's Choice: NAD IV 250mg OR Blood Panel + consult", 250],
   ["Glutathione push", 50],
   ["B12 injection", 25],
-  ["Premium add-on (Beauty Boost / Magic Mojo / Belly Buster / Deep Detox)", 72],
+  ["Premium add-on choice", 72],
   ["Premium branded welcome kit", 75],
 ];
 
 const cohorts = [
-  { name: "Cohort 1", seats: 25, price: 299, color: GREEN },
-  { name: "Cohort 2", seats: 25, price: 309, color: GREEN2 },
-  { name: "Cohort 3", seats: 50, price: 319, color: LIME },
+  { name: "Cohort 1", seats: "First 25 seats", price: 299, color: GREEN },
+  { name: "Cohort 2", seats: "Next 25 seats", price: 309, color: GREEN2 },
+  { name: "Cohort 3", seats: "Next 50 seats", price: 319, color: CHARCOAL },
 ];
 
 const phases = [
@@ -968,33 +1145,35 @@ function ValueStack({
   title,
   items,
   total,
+  dark = false,
 }: {
   title: string;
   items: [string, number][];
   total: number;
+  dark?: boolean;
 }) {
   return (
     <div>
-      <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: GREEN }}>
+      <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: dark ? LIME : GREEN }}>
         {title}
       </div>
       <div className="space-y-2">
         {items.map(([n, v]) => (
           <div key={n} className="flex justify-between gap-3 text-sm">
-            <span style={{ color: "#58595B" }}>{n}</span>
-            <span className="font-mono shrink-0" style={{ color: CHARCOAL }}>
+            <span style={{ color: dark ? "rgba(255,255,255,.7)" : "#58595B" }}>{n}</span>
+            <span className="font-mono shrink-0" style={{ color: dark ? "#fff" : CHARCOAL }}>
               {money(v)}
             </span>
           </div>
         ))}
         <div
           className="flex justify-between pt-2 mt-2 border-t border-dashed"
-          style={{ borderColor: GREEN }}
+          style={{ borderColor: dark ? LIME : GREEN }}
         >
-          <span className="font-bold" style={{ color: CHARCOAL }}>
+          <span className="font-bold" style={{ color: dark ? "#fff" : CHARCOAL }}>
             Visit One value
           </span>
-          <span className="font-mono font-bold" style={{ color: GREEN }}>
+          <span className="font-mono font-bold" style={{ color: dark ? LIME : GREEN }}>
             ~{money(total)}
           </span>
         </div>
@@ -1042,7 +1221,7 @@ function Founding() {
               $79 down (your first month, rolls into MTM). $79 monthly credit, 25mg
               NAD+ monthly, Compression + Red Light, 6% off.
             </p>
-            <ValueStack title="Visit One Welcome Bundle" items={vitalStack as [string, number][]} total={389} />
+            <ValueStack title="Visit One Welcome Bundle" items={vitalStack} total={389} />
             <div className="mt-6 rounded-xl p-4" style={{ background: "#F7F8F9" }}>
               <div className="flex justify-between text-sm">
                 <span style={{ color: "#58595B" }}>Lifetime lock saves</span>
@@ -1083,25 +1262,7 @@ function Founding() {
               Cohort-priced from $299. Monthly credit, 50mg NAD+ monthly, Deep Detox
               IV monthly, Compression + Red Light, 15% off, VIP scheduling.
             </p>
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: LIME }}>
-                Visit One Welcome Bundle
-              </div>
-              <div className="space-y-2">
-                {eliteStack.map(([n, v]) => (
-                  <div key={n} className="flex justify-between gap-3 text-sm">
-                    <span className="text-white/75">{n}</span>
-                    <span className="font-mono shrink-0 text-white">{money(v)}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between pt-2 mt-2 border-t border-dashed" style={{ borderColor: LIME }}>
-                  <span className="font-bold text-white">Visit One value</span>
-                  <span className="font-mono font-bold" style={{ color: LIME }}>
-                    ~$815
-                  </span>
-                </div>
-              </div>
-            </div>
+            <ValueStack title="Visit One Welcome Bundle" items={eliteStack} total={830} dark />
             <div className="mt-6 rounded-xl p-4" style={{ background: "rgba(255,255,255,.06)" }}>
               <div className="flex justify-between text-sm">
                 <span className="text-white/70">Lifetime lock saves</span>
@@ -1117,31 +1278,51 @@ function Founding() {
           </motion.div>
         </div>
 
-        {/* Cohort fill bars */}
-        <motion.div {...fadeUp} className="rounded-2xl bg-white p-8 shadow-lg border border-black/5 mb-16">
-          <h4 className="font-condensed text-2xl mb-1" style={{ color: GREEN }}>
+        {/* Elite cohort cards — 3 clean side-by-side cards */}
+        <motion.div {...fadeUp} className="mb-16">
+          <h4 className="font-condensed text-2xl mb-2 text-center" style={{ color: GREEN }}>
             Elite cohorts: prices escalate as seats fill
           </h4>
-          <p className="text-sm mb-6" style={{ color: "#666" }}>
+          <p className="text-sm mb-8 text-center" style={{ color: "#666" }}>
             Urgency without manufactured deadlines — the next seat always costs more.
           </p>
-          <div className="flex h-16 rounded-xl overflow-hidden border border-black/5">
+          <div className="grid grid-cols-3 gap-5">
             {cohorts.map((c) => (
               <div
                 key={c.name}
-                className="flex flex-col items-center justify-center text-white relative"
-                style={{ width: `${c.seats}%`, background: c.color }}
+                className="rounded-2xl p-7 text-white flex flex-col items-center text-center shadow-lg"
+                style={{ background: c.color }}
               >
-                <span className="font-mono font-bold text-lg">${c.price}/mo</span>
-                <span className="text-xs opacity-90">
-                  {c.name} · {c.seats} seats
+                <span className="text-xs font-bold uppercase tracking-widest text-white/70 mb-3">
+                  {c.name}
                 </span>
+                <span className="font-mono font-bold" style={{ fontSize: 38, lineHeight: 1 }}>
+                  ${c.price}/mo
+                </span>
+                <span className="mt-2 text-sm text-white/80">{c.seats}</span>
+                <span className="mt-2 text-xs text-white/60">locked for life</span>
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs mt-2" style={{ color: "#999" }}>
-            <span>Seat 1</span>
-            <span>100 founding members</span>
+          <div className="mt-6 rounded-2xl bg-white p-6 border border-black/5 shadow-sm">
+            <div className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: GREEN }}>
+              All Elite cohorts include
+            </div>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {[
+                "Down payment = first month, rolls into MTM",
+                "Monthly credit, 50mg NAD+ monthly",
+                "Deep Detox IV monthly",
+                "Compression + Red Light access",
+                "15% off all à la carte services",
+                "VIP scheduling priority",
+              ].map((f) => (
+                <div key={f} className="flex gap-2 text-sm" style={{ color: "#58595B" }}>
+                  <CheckCircle2 size={15} style={{ color: GREEN }} className="shrink-0 mt-0.5" />
+                  <span>{f}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -1208,16 +1389,16 @@ function Founding() {
   );
 }
 
-/* --------------------------- CORPORATE UPSIDE -------------------------- */
+/* ─────────────────────────── CORPORATE UPSIDE ───────────────────────────── */
 
-const AVG_MONTHLY = 150; // blended founding membership
+const AVG_MONTHLY = 150;
 const ROYALTY_RATE = 0.07;
 
 function Corporate() {
   const [openings, setOpenings] = useState<1 | 10>(10);
 
   const data = useMemo(() => {
-    const monthly = GUARANTEE * AVG_MONTHLY * ROYALTY_RATE; // per location / month
+    const monthly = GUARANTEE * AVG_MONTHLY * ROYALTY_RATE;
     return Array.from({ length: 12 }, (_, i) => {
       const m = i + 1;
       return {
@@ -1328,12 +1509,12 @@ function Corporate() {
   );
 }
 
-/* ------------------------------- THE ASK ------------------------------- */
+/* ──────────────────────────── THE ASK ───────────────────────────────────── */
 
 function Ask() {
   return (
     <section id="ask" className="relative" data-testid="section-ask">
-      {/* testimonial side label flourish */}
+      {/* Testimonial side-label flourish + pull quote */}
       <div className="bg-white py-24 px-6 relative overflow-hidden">
         <div
           className="hidden xl:flex absolute left-4 top-1/2 -translate-y-1/2 items-center justify-center"
@@ -1388,6 +1569,7 @@ function Ask() {
             href="mailto:partnerships@revryze.com?subject=IV%20Nutrition%20x%20Revryze%20Pilot"
             className="inline-flex items-center gap-2 bg-white px-9 py-4 rounded-[5px] font-cta font-bold text-base"
             style={{ color: GREEN }}
+            data-testid="button-start-conversation"
           >
             Start the Conversation <ArrowRight size={18} />
           </a>
@@ -1411,7 +1593,7 @@ function Ask() {
   );
 }
 
-/* -------------------------------- PAGE --------------------------------- */
+/* ──────────────────────────── PAGE ──────────────────────────────────────── */
 
 export default function ProposalPage() {
   const [tier, setTier] = useState<Tier>("pilot");

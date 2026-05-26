@@ -1,0 +1,225 @@
+# Prompt for Claude Code: Revryze x IV Nutrition Pilot Proposal
+
+Build a sales proposal web application for **Revryze x IV Nutrition** — a high-stakes B2B sales proposal targeting IV Nutrition franchisees. The presentation should be premium, data-driven, and styled in IV Nutrition's official brand system. Single-page scrolling proposal with an interactive ROI calculator as the centerpiece.
+
+## Tech Stack
+
+- **Frontend**: React 18 + TypeScript, Vite, Wouter routing, TanStack Query
+- **Styling**: Tailwind CSS + shadcn/ui (Radix UI primitives)
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Backend**: Node.js + Express 5, TypeScript (tsx for dev, esbuild for prod)
+- **Project structure**: `client/` (React), `server/` (Express), `shared/` (Drizzle schemas)
+
+---
+
+## IV NUTRITION BRAND SYSTEM
+
+### Color Palette
+- **Primary / CTA — IV Green**: `#009547`
+- **Secondary Green**: `#009430`
+- **Accent / Logo Leaf — Lime**: `#8DC63F`
+- **Dark Background — Charcoal**: `#333333`
+- **Dark Alt**: `#383D41`
+- **Footer / Section Dark**: `#2B2E2D`
+- **Body Text (dark)**: `#212121`
+- **Body Text (medium)**: `#58595B`
+- **Body Text (light)**: `#666666`
+- **Background (light)**: `#F4F4F4`
+- **Background (alt)**: `#F7F8F9`
+- **Base**: `#FFFFFF`
+
+Green-dominant palette. Lime accent for fresh pop. Dark charcoal sections for high-contrast feature blocks. Light, green, clean — NOT a dark cyan theme.
+
+### Typography (all via Google Fonts)
+- **Open Sans Condensed Bold** — H1 (62px desktop / 26px mobile), H2 (34px / 24px mobile) — colored `#009547`
+- **Open Sans** — Body (18px lead, 16px nav, 14–16px footer) — colored `#212121` body, white on dark
+- **Caveat** (cursive handwritten) — pull quotes / accent quotes (26px) — colored `#009547`
+- **Roboto Bold** — CTA buttons (14px, white on green)
+- **PT Sans** — fallback / secondary UI
+- **JetBrains Mono or Roboto Mono** — all numerical data
+
+### Brand Voice
+- Empowering, warm, science-backed, approachable
+- Second-person ("your body," "your wellness"), active verbs
+- Science language translated into plain wellness-coach speak
+- Personalized & warm — emphasize "custom-made just for you"
+- Subtly urgent, never pushy or fear-based
+- Occasional playfulness ("Refresh. Restore. Renew.")
+- **Avoid**: clinical/pharma tone, hard-sell pressure, fear-mongering, unverified medical claims
+
+### Sample Taglines / Voice Cues
+- "Optimize Your Health With IV Nutrient Therapy Drips"
+- "Nourish Your Body, Nourish Your Soul"
+- "Refresh. Restore. Renew."
+- "Support your wellness routine"
+- Pull quote (Caveat font, green): *"Our IV and injection nutrient protocols are custom-made just for you based on your unique needs."*
+
+### Layout & UI Conventions
+- Full-width hero with semi-transparent dark overlay on photography
+- Alternating white and `#F4F4F4` sections
+- Dark charcoal `#333333` accent sections for high-contrast feature blocks
+- Card grids with **dashed green borders** (`#009547`) on white, with hover lift
+- Rounded CTA buttons: `border-radius: 5px`, solid `#009547` fill, white Roboto Bold text, hover state `#009430`
+- Split layouts (image left / text right) for narrative sections
+- Large green quotation-mark icons anchor testimonials
+- Vertical "TESTIMONIALS" rotated side-label is a distinctive flourish — use it
+- Line-art Lucide icons in dashed-border square cards, `#009547` strokes on white
+
+### Imagery Mood
+Calm, premium, health-forward. Leather recliners receiving IV drips, warm brick interiors, moss walls, navy-scrub practitioners, active lifestyle photography.
+
+---
+
+## CORE OFFER STRUCTURE
+
+### Pilot & Pricing Model
+- **Standard price**: $30,000 per opening for a **100 member guarantee**
+- **Volume price**: $25,000 per opening if franchisee signs/agrees to **≥10 openings over the next 12 months**
+- **Pilot pricing**: $25,000 (pilots get the volume rate)
+- **Franchisee qualification requirements** to invoke the guarantee:
+  - Spend **$20,000 on ads**
+  - Generate **250 community-driven leads**
+- **Refund mechanic**: dollar-for-dollar pro-rata refund based on memberships sold vs the 100 guarantee
+  - 50 memberships sold → 50% refund
+  - 75 memberships → 25% refund
+  - 100+ → $0 refund (full delivery)
+
+### Corporate framing
+- Corporate IV Nutrition incurs **$0 cost** — franchisees pay Revryze fees directly
+- All membership revenue and royalty uplift = **pure upside** to corporate
+- Messaging pillars: science-backed wellness, community-driven growth, derisked franchisee economics
+
+---
+
+## FRANCHISEE ROI CALCULATOR (the showpiece — get this right)
+
+This is the centerpiece interactive section. Build it as a clean dashboard with sliders on one side and a live-updating ROI display on the other. Default state must show a strong, compelling result the moment the page loads.
+
+### Inputs (sliders)
+1. **Memberships Sold** — range 1 to 100 — **default 100**
+2. **Average Membership Value** — range $79 to $400/mo — **default $199**
+3. **Average Member Lifetime** — range 1 to 20 months — **default 10 months**
+4. **Pricing tier toggle** — $30k Standard / $25k Volume or Pilot — **default $25k**
+
+The qualification requirements ($20k ad spend, 250 community leads) are displayed as a fixed reference box near the calculator — NOT sliders. Just show them as the cost-of-entry to invoke the guarantee.
+
+### Live-Updating Outputs (right side of calculator)
+All numbers in monospace, color-coded green for positive / red for negative.
+
+1. **Revryze fee paid** (based on pricing tier toggle)
+2. **Refund earned** (if memberships sold < 100) — `(100 - sold) / 100 × fee paid`
+3. **Net Revryze cost** (fee − refund)
+4. **Ad spend** — fixed at $20,000 (the qualification requirement, displayed as part of the franchisee's total investment)
+5. **Total franchisee investment** — Net Revryze cost + $20,000 ad spend
+6. **Monthly recurring revenue at open** — `memberships sold × avg membership value`
+7. **Total membership revenue over lifetime** — `memberships sold × avg membership value × avg lifetime months`
+8. **Net profit** — Total membership revenue − Total franchisee investment
+9. **ROI multiple** — Total membership revenue ÷ Total franchisee investment (display as "5.2x" style)
+10. **Payback period** — months until membership revenue covers total investment
+
+### Default state math check (so you know it's working)
+- 100 memberships × $199/mo × 10 months = **$199,000 lifetime revenue**
+- $25,000 Revryze + $20,000 ad spend = **$45,000 total investment**
+- Net profit: **$154,000**
+- ROI: **~4.4x**
+- Payback: ~2.3 months
+- Refund: $0 (full delivery)
+
+### Visual elements within the calculator
+- Progress bar showing memberships sold vs the 100 guarantee, filling `#009547`
+- A small Recharts area chart showing cumulative cash flow over the member lifetime — investment going negative at month 0, then climbing into the green as MRR compounds
+- Crisp dividers between inputs and outputs
+- Smooth animation on number changes (count-up transitions are fine, keep it tasteful)
+
+---
+
+## FOUNDING MEMBER CAMPAIGN SECTION
+
+### Framework
+- **Length**: 16 weeks pre-open
+- **Member target**: 100 founders at open
+- **Two offers, both with lifetime-locked rates**
+
+### Offer 1: Founding Vital Starter — $79/mo
+- $79 down (= first month, rolls into MTM)
+- Standard perks: $79 credit, 25mg NAD+ monthly, Compression/Red Light, 6% off
+- **Visit One Welcome Bundle (~$389 value)**:
+  - Mega Myers IV ($179)
+  - NAD 50mg IM ($50)
+  - B12 injection ($25)
+  - Glutathione push ($50)
+  - Beauty Boost OR Belly Buster add-on ($50)
+  - Branded welcome kit ($35)
+- Lifetime lock saves $240/yr forever vs $99 standard
+- **Total Year 1 value: ~$629 for $79 today**
+
+### Offer 2: Founding Elite Wellness
+Display as **three clean stacked cards or a simple 3-column row** — one card per cohort. Each card shows: cohort number, price/mo, seat count. That's it. Don't overcomplicate it with a gradient fill bar or seat-by-seat dot visualization — just three clean cards side by side.
+
+- **Cohort 1** (first 25): $299/mo locked for life
+- **Cohort 2** (next 25): $309/mo locked for life
+- **Cohort 3** (next 50): $319/mo locked for life
+
+Below the three cards, show the shared Elite details once:
+- Down payment = first month, rolls into MTM
+- Standard perks: monthly credit, 50mg NAD+ monthly, Deep Detox IV monthly, Compression + Red Light, 15% off, VIP scheduling
+- **Visit One Welcome Bundle (~$815 value)**:
+  - Mega Myers IV ($179)
+  - Inner Immune OR Repair and Rebuild IV — member's choice ($179)
+  - Founder's Choice ($250): NAD IV 250mg OR Foundation Blood Panel + practitioner consult
+  - Glutathione push ($50)
+  - B12 injection ($25)
+  - Premium add-on choice ($50–$72)
+  - Premium branded welcome kit ($75)
+- Lifetime lock saves $672–$912/yr forever vs $375 standard
+- **Total Year 1 value: ~$1,500–$1,725 for $299 today**
+
+### Campaign Arc — horizontal 4-step timeline
+- **Phase 1 — Launch (Weeks 1–6)**: Both offers live, Elite Cohort 1 selling, Vital selling, Meta ads + community events, scarcity on Cohort 1 seats
+- **Phase 2 — Mid-flight (Weeks 7–12)**: Cohort 1 fills → moves to Cohort 2 ($309), continued Meta + community events, cohort scarcity messaging
+- **Phase 3 — T-30 Final Push (Weeks 13–16)**: Cohort 3 ($319) live, "doors open in 30 days, lifetime lock closes at open," aggressive retargeting
+- **Open Day (Week 17)**: Founding offer closes, standard pricing only ($99 / $375) forward
+
+### Key Mechanics Callout
+- Lifetime rate lock is the **load-bearing promise** across both offers
+- Cohort prices escalate as seats fill — urgency without manufactured deadlines
+- Founder's Choice (NAD IV vs Foundation Panel) self-segments leads for ad optimization
+- Down payment = first month rolling into MTM
+- Visit One bundle front-loaded for maximum wow factor
+
+---
+
+## PAGE SECTIONS (flow)
+
+1. **Hero** — Bold Open Sans Condensed headline in `#009547`, hero photo with dark overlay, "100 Members Guaranteed" CTA in green Roboto Bold button. Caveat-font subhead for accent
+2. **The Problem** — Without Revryze: failed openings, cold-start risk, slow membership ramp. Charcoal `#333333` section with red vs green comparison charts
+3. **The Revryze Solution** — How the system derisks the opening. White section, dashed-green-border cards with line-art icons
+4. **The Offer** — $30k Standard / $25k Volume / $25k Pilot. Qualification requirements clearly listed ($20k ad spend, 250 community leads). Toggle group to switch between pricing tiers
+5. **Franchisee ROI Calculator** — THE SHOWPIECE. Four sliders on the left, live dashboard of outputs on the right. Defaults loaded to show the strongest result (100 memberships, $199 avg value, 10mo lifetime, $25k pilot pricing → ~4.4x ROI)
+6. **Founding Member Campaign** — Vital + Elite breakdowns with the simple 3-card Elite cohort display. 16-week horizontal timeline. Caveat pull quote
+7. **Corporate Upside** — $0 cost to corporate framing. Royalty math at 1 opening vs 10+ openings. Recharts visualization of cumulative royalty revenue
+8. **The Ask / Next Steps** — Clear green CTA, footer
+
+---
+
+## Implementation Notes
+
+- ROI calculator is the interactive centerpiece — get the math right, get the defaults right, and make the output dashboard feel like a real financial model, not a marketing toy
+- Use Recharts for: opening curve comparisons (with/without Revryze), cumulative cash flow in the calculator, royalty projections — colored in the IV palette
+- Toggle groups to switch pricing tiers ($30k vs $25k) and royalty projection scenarios (1 opening vs 10+ openings)
+- All numerical data in monospace
+- Italicize / Caveat font for key pull quotes
+- Smooth scroll between sections, section-anchored navigation
+- Rounded buttons (5px), solid `#009547`, white Roboto Bold text, hover `#009430`
+- Dashed `#009547` borders on feature cards with subtle hover lift
+- Hero with full-width photo + dark overlay
+- Alternating section backgrounds: white → `#F4F4F4` → white → `#333333` → white
+- Lead with the guarantee — "100 Members Guaranteed or Your Money Back" appears prominently in the hero and again at the offer section
+
+## Content Tone Reminders
+- Empowering, warm, science-backed, approachable — never clinical or pushy
+- Second-person throughout
+- Frame Revryze as the **derisking partner** that brings IV Nutrition's wellness promise to life at scale
+- For corporate: emphasize $0 cost, pure royalty upside, franchisee success = corporate success
+- For franchisees: emphasize the guarantee, the refund mechanic, and the predictable opening economics
