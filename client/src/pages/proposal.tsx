@@ -187,8 +187,23 @@ function Hero() {
       <div
         className="absolute inset-0"
         style={{
+          background: "#2B2E2D",
+        }}
+      />
+      {/* Gradient overlay: bottom-right IV green fade */}
+      <div
+        className="absolute inset-0"
+        style={{
           background:
-            "linear-gradient(rgba(20,40,28,.78), rgba(20,40,28,.86)), url('https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1920&q=80') center/cover",
+            "linear-gradient(135deg, transparent 30%, rgba(0,149,71,0.38) 100%)",
+        }}
+      />
+      {/* Radial lime glow — upper right for depth */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 55% at 88% 12%, rgba(141,198,63,0.15) 0%, transparent 70%)",
         }}
       />
       <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-28 text-center">
